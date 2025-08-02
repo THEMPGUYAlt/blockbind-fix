@@ -22,11 +22,27 @@ public class PlatformChooser {
         String version = Bukkit.getVersion();
         version = version.substring(version.indexOf("MC: ") + 4, version.lastIndexOf(')'));
 
-        return switch (version) {
-            case "1.16.5" -> new PlatformAdapter16R3();
-            case "1.18" -> new PlatformAdapter18R1();
-            default -> null;
-        };
+        String[] parts = version.split("\\.");
+        if (parts.length < 2) {
+            return null;
+        }
+
+        try {
+            int major = Integer.parseInt(parts[0]);
+            int minor = Integer.parseInt(parts[1]);
+
+            if (major == 1) {
+                if (minor >= 18) {
+                    return new PlatformAdapter18R1();
+                } else if (minor >= 16 && minor <= 17) {
+                    return new PlatformAdapter16R3();
+                }
+            }
+        } catch (NumberFormatException e) {
+            return null;
+        }
+
+        return null;
     }
 
 }
